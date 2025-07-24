@@ -12,7 +12,7 @@ import sys
 
 # If no/too many arguments
 if len(sys.argv) not in [2, 3]:
-    print("Usage (default port values are 0-1024): python3 port_scanner.py <targetIP/URL> [targetPorts]")
+    print("Usage (default port values are 0-1024): python3 port_scanner.py <target IP/URL> [targetPorts]")
     print("Example: python3 port_scanner.py google.com 80-443")
     # Exit with status code 1 (error) - can be useful if this script is ran by another script
     sys.exit(1)
