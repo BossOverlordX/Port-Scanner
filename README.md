@@ -35,7 +35,7 @@ A simple, command-line port scanner, that can be used to detect open ports on a 
 
 ## How It Works
 
-The script parses all arguments using sys.argv and translates URLs into IPv4 addresses using socket.gethostbyname()
+The script parses all arguments using sys.argv and translates URLs into IPv4 addresses using socket.gethostbyname().
 The script iterates through the provided port range, attempting to establish a connection for each port using a TCP socket.
 Using socket.connect_ex(), the script will be able to only output ports with a successful status code and will not raise exceptions for failed connections.
 
@@ -46,4 +46,4 @@ Using socket.connect_ex(), the script will be able to only output ports with a s
 
 ## ⚠️ Disclaimer
 
-This tool is intended for educational purposes and for use on systems where you have explicit permission.
+This tool is intended for educational purposes only and for use on systems where you have explicit permission.
