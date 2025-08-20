@@ -3,12 +3,29 @@
 # EXAMPLE: python3 port_scanner.py google.com 80-443
 # Default ports to scan are 0 to 1024
 
-# Potential improvements in future:
-# - Use threading to increase the speed of the process
-# - Banner grabbing (get the service the port runs on, i.e. SSH)
-
 import socket
 import sys
+import os
+import concurrent.futures
+
+def port_connect(targetIP, port):
+    # Create socket (IPv4, protocol TCP, time out after 0.5s)
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.settimeout(0.5)
+
+    status = s.connect_ex((targetIP, port))
+    if status == 0:
+        # Try banner grabbing
+        try:
+            s.sendall(b'GET / HTTP/1.1\r\nHost: ' + targetIP.encode() + b'\r\n\r\n')
+            banner = s.recv(1024).decode('utf-8', 'ignore').strip().splitlines()[0].split()[0]
+            print(port, "---", banner)
+        except:
+            print(port)
+        s.close()
+        return 1
+    s.close()
+    return 0
 
 # If no/too many arguments
 if len(sys.argv) not in [2, 3]:
@@ -47,19 +64,19 @@ except Exception as e:
     print(f"Unknown exception occured during initialisation of IP and port values:\n{e}")
     sys.exit(1)
 
+# Define thread pool
+pool = concurrent.futures.ThreadPoolExecutor(max_workers=2*os.cpu_count()+1)
+futures = []
 
 print(f"Open ports on IP {targetIP}:")
 numOpen = 0
 
 for i in range(startPort, endPort+1):
-    # Create socket (IPv4, protocol TCP, time out after 0.5s)
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.settimeout(0.5)
+    # New thread for each port connection
+    futures.append(pool.submit(port_connect, targetIP, i))
 
-    status = s.connect_ex((targetIP, i))
-    if status == 0:
-        print(i)
-        numOpen += 1
-    s.close()
+for future in concurrent.futures.as_completed(futures):
+    numOpen += future.result()
 
+pool.shutdown(wait=True)
 print(f"\nTotal number of open ports between {startPort}-{endPort} on {sys.argv[1]}: {numOpen}")
