@@ -1,9 +1,11 @@
 # Python TCP Port Scanner
 
-A simple, command-line port scanner, that can be used to detect open ports on a given IP/URL. Only requirement is having Python 3.x installed :D
+A simple, fast, command-line port scanner used to detect open ports on a given host using multithreading to perform scans quickly and attempting basic banner grabbing to help identify services running on open ports. The only requirement is Python 3.x.
 
 ## Features
 
+  -  Utilises `concurrent.futures` to scan multiple ports simultaneously.
+  -  Attempts to identify the service on open ports by grabbing and displaying service banners
   -  Accepts both IP addresses and domain names (URLs).
   -  User is able to specify a single port or a custom range of ports to scan.
   -  If no port range is specified, the first 1024 ports are scanned.
@@ -35,14 +37,13 @@ A simple, command-line port scanner, that can be used to detect open ports on a 
 
 ## How It Works
 
-The script parses all arguments using sys.argv and translates URLs into IPv4 addresses using socket.gethostbyname().
-The script iterates through the provided port range, attempting to establish a connection for each port using a TCP socket.
-Using socket.connect_ex(), the script will be able to only output ports with a successful status code and will not raise exceptions for failed connections.
+The script parses all arguments using `sys.argv` and translates URLs into IPv4 addresses using `socket.gethostbyname()`.\
+The script iterates through the provided port range, initialising a new thread for each that attempts to establish a connection using a TCP socket.\
+If a connection is successful, the script then attempts basic banner grabbing by sending a generic HTTP GET request, printing the relevant response material alongside the port number (if receieved).
 
 ## Future Improvements
-  -  **Threading:** Implement multithreading to perform multiple port checks concurrently.
-  -  **Banner Grabbing:** Add functionality to retrieve service banners from open ports to identify the running services.
   -  **Verbose Mode:** Add a `-v` flag to show both open and closed ports for more detailed analysis.
+  -  **Output to File:** Add a `-o` flag to save the scan results to a text file.
 
 ## ⚠️ Disclaimer
 
